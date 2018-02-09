@@ -38,7 +38,7 @@ public class InteractionActivity extends AppCompatActivity {
     ImageButton btn_single, btn_group;
     RequestQueue queue;
 
-    boolean full_fn = false;
+    boolean full_fn = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,7 +85,7 @@ public class InteractionActivity extends AppCompatActivity {
             intent.putExtra("single",g_single);
             intent.putExtra("user_id", 100);
             startActivity(intent);
-            finish();
+            //finish();
         }
     }
 
@@ -105,7 +105,7 @@ public class InteractionActivity extends AppCompatActivity {
             intent.putExtra("single",g_single);
             intent.putExtra("user_id", 100);
             startActivity(intent);
-            finish();
+            //finish();
         }
     }
 
@@ -131,6 +131,7 @@ public class InteractionActivity extends AppCompatActivity {
     private void interactionFuntain(final int user_id, final int single)
     {
         String url= "http://192.168.100.1/svc_funtain.php?metodo=interaction";
+        writeLog(url);
         StringRequest postRequest = new StringRequest(Request.Method.POST, url,
                 new Response.Listener<String>()
                 {

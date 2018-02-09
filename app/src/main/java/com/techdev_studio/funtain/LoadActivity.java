@@ -39,7 +39,7 @@ public class LoadActivity extends AppCompatActivity {
     private String networkSSID = "FUNTAIN_NET";
     private String networkPass = "tds_funtain";
 
-    boolean full_fn = false;
+    boolean full_fn = true;
     View rootview=null;
     private String mac_adr = "0.0.0.0";
     private String ip_adr = "aa:aa:aa:aa";
@@ -189,7 +189,7 @@ public class LoadActivity extends AppCompatActivity {
         List<WifiConfiguration> list = wifiManager.getConfiguredNetworks();
         for( WifiConfiguration i : list ) {
             if(i.SSID != null && i.SSID.equals("\"" + networkSSID + "\"")) {
-                Toast.makeText(LoadActivity.this, "Funtain Hallada, conectando!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(LoadActivity.this, "Conectando con FUNTAIN!", Toast.LENGTH_SHORT).show();
                 wifiManager.disconnect();
                 wifiManager.enableNetwork(i.networkId, true);
                 wifiManager.reconnect();

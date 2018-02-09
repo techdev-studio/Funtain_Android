@@ -25,6 +25,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.techdev_studio.funtain.tools.shake_listener;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 public class GameActivity extends AppCompatActivity {
@@ -46,9 +47,12 @@ public class GameActivity extends AppCompatActivity {
     float _z = 0;
 
     int _acel = 0;
+    int prev_acel = 0;
 
     Button btn_salir;
     boolean full_fn = false;
+
+    Thread thread;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -101,15 +105,18 @@ public class GameActivity extends AppCompatActivity {
         _z= mShaker.getmLastZ();
 
         _acel = Math.round(100*Math.abs(_y)/1000);
+        if (_acel == prev_acel){
+            _acel = 0;
+        }
     }
     private void startLoop()
     {
         //final Vibrator vibe = (Vibrator)getSystemService(Context.VIBRATOR_SERVICE);
         //vibe.vibrate(500);
-        CountDownTimer timer = new CountDownTimer(3000, 1000) {
+        CountDownTimer timer = new CountDownTimer(5000, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
-                tv_count.setText(Math.round(3 - (millisUntilFinished/1000)));
+                tv_count.setText(String.valueOf(Math.round((millisUntilFinished/1000))-1));
                 //sendValue();
             }
 
@@ -125,13 +132,13 @@ public class GameActivity extends AppCompatActivity {
     private void mainLoop()
     {
         final Handler mHandler = new Handler();
-        new Thread(new Runnable() {
+        thread = new Thread(new Runnable() {
                 @Override
                 public void run() {
                     // TODO Auto-generated method stub
                     while (true) {
                         try {
-                            Thread.sleep(500);
+                            Thread.sleep(250);
                             mHandler.post(new Runnable() {
 
                                 @Override
@@ -143,11 +150,13 @@ public class GameActivity extends AppCompatActivity {
                             });
                         } catch (Exception e) {
                             // TODO: handle exception
-                            onBackPressed();
+                            break;
                         }
                     }
+
                 }
-        }).start();
+        });
+        thread.start();
     }
 
 
@@ -168,19 +177,28 @@ public class GameActivity extends AppCompatActivity {
 
     private void sendValue()
     {
-        if(full_fn)
-        {
+        try{
             if (checkConnected())
             {
                 int accel = _acel;
-                writeLog("acel " + accel);
                 String _url = final_url + accel;
+                writeLog(_url);
                 JsonObjectRequest jsObjRequest = new JsonObjectRequest
                         (Request.Method.GET, _url, null, new Response.Listener<JSONObject>() {
 
                             @Override
                             public void onResponse(JSONObject response) {
                                 writeLog("Response: " + response.toString());
+                                try {
+                                    Boolean _suc = response.getBoolean("success");
+                                    if (_suc){
+                                        //continue
+                                    }else{
+                                        onBackPressed();
+                                    }
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
                             }
                         }, new Response.ErrorListener() {
 
@@ -192,6 +210,7 @@ public class GameActivity extends AppCompatActivity {
                         });
 
                 queue.add(jsObjRequest);
+                prev_acel=accel;
             }
             else
             {
@@ -199,11 +218,11 @@ public class GameActivity extends AppCompatActivity {
                 onBackPressed();
             }
         }
-        else
+        catch (Exception ex)
         {
-
+            writeLog(ex.toString());
         }
-
+        //prev_acel = _acel;
     }
 
     public boolean checkConnected()
@@ -236,6 +255,7 @@ public class GameActivity extends AppCompatActivity {
     private void desconectar()
     {
         String _url = url_logout + user_id;
+        writeLog(_url);
         JsonObjectRequest jsObjRequest = new JsonObjectRequest
                 (Request.Method.GET, _url, null, new Response.Listener<JSONObject>() {
 
@@ -259,6 +279,7 @@ public class GameActivity extends AppCompatActivity {
     public void onBackPressed() {
         desconectar();
         mShaker.pause();
+        thread.interrupt();
         super.onBackPressed();
     }
 
