@@ -104,7 +104,7 @@ public class GameActivity extends AppCompatActivity {
         _y= mShaker.getmLastY();
         _z= mShaker.getmLastZ();
 
-        _acel = Math.round(100*Math.abs(_y)/1000);
+        _acel = Math.round(Math.abs(_y));
         if (_acel == prev_acel){
             _acel = 0;
         }

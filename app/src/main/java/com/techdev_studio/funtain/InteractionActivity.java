@@ -112,19 +112,26 @@ public class InteractionActivity extends AppCompatActivity {
     private void valSingleReg(String response)
     {
         boolean _success = false;
+        String _message = "";
         try {
             JSONObject jobject = new JSONObject(response);
             _success=jobject.getBoolean("success");
-
+            _message=jobject.getString("message");
         } catch (JSONException e) {
             e.printStackTrace();
         }
         if(_success)
         {
-                Intent intent = new Intent(InteractionActivity.this, GameActivity.class);
-                intent.putExtra("single",g_single);
-                intent.putExtra("user_id", g_user_id);
-                startActivity(intent);
+            Toast.makeText(InteractionActivity.this, _message, Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(InteractionActivity.this, GameActivity.class);
+            intent.putExtra("single",g_single);
+            intent.putExtra("user_id", g_user_id);
+            startActivity(intent);
+
+        }
+        else
+        {
+            Toast.makeText(InteractionActivity.this, _message, Toast.LENGTH_LONG).show();
         }
     }
 
@@ -147,7 +154,7 @@ public class InteractionActivity extends AppCompatActivity {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         // error
-                        Log.d("Error.Response", error.getMessage());
+                        Log.d("Error.Response", error.toString());
                     }
                 }
         ) {

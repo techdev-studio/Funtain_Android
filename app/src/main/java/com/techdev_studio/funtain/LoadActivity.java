@@ -98,14 +98,17 @@ public class LoadActivity extends AppCompatActivity {
 
     private void getMacIp()
     {
+        writeLog("getting mac and ip");
         try
         {
             WifiManager manager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
             WifiInfo info = manager.getConnectionInfo();
             mac_adr = info.getMacAddress();
+            writeLog("mac addres" + mac_adr);
 
             WifiManager wm = (WifiManager) getSystemService(WIFI_SERVICE);
             ip_adr = Formatter.formatIpAddress(wm.getConnectionInfo().getIpAddress());
+            writeLog("ip_address" + ip_adr);
         }
         catch (Exception ex)
         {
@@ -287,7 +290,7 @@ public class LoadActivity extends AppCompatActivity {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         // error
-                        Log.d("Error.Response", error.getMessage());
+                        Log.d("Error.Response", error.toString());
                     }
                 }
         ) {
@@ -307,6 +310,7 @@ public class LoadActivity extends AppCompatActivity {
 
     private void valReg(String response)
     {
+        writeLog(response);
         boolean _continue = false;
         int user_id = 0;
         try {
